@@ -16,5 +16,6 @@ class SimpleEcho(WebSocket):
     def handleClose(self):
         print(self.address, 'closed')
 
-server = SimpleWebSocketServer('', 8000, SimpleEcho)
-server.serveforever()
+def startServer():
+    server = SimpleWebSocketServer('', 8000, SimpleEcho)
+    server.serveforever()

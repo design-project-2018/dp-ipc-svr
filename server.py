@@ -1,4 +1,5 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+import os, shutil
 import json
 import time
 
@@ -17,5 +18,16 @@ class SimpleEcho(WebSocket):
         print(self.address, 'closed')
 
 def startServer():
+    # removed cached files
+    folder = '/home/nvidia/Downloads/output/'
+    for f in os.listdir(folder):
+        file_path = os.path.join(folder, f)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as e:
+            print(e)
+    # start websocket server
+    print('Starting websocket server')
     server = SimpleWebSocketServer('', 8000, SimpleEcho)
     server.serveforever()

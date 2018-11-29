@@ -3,42 +3,40 @@ import os, shutil
 from random import randint
 import json
 import time
+import cv2
 
 def scoreFrame(packet):
     frame_id = packet['frame_id']
     frame = cv2.imread(packet['original_frame'])
 
     label = randint(0, 3)
-    color = (0, 0, 255)
+    level = 'low'
     if label == 1:
-        color = (255, 0, 255)
+        level = 'moderate'
     if label == 2:
-        color = (0, 255, 0)
+        level = 'high'
     if label == 3:
-        color = (255, 0, 0)
-    print('Danger level: {}'.format(label))
-    cv2.rectangle(frame, (0, 0), (224, 224), color, -1)
-    cv2.imwrite('/home/nvidia/Downloads/output/{}-result.jpg'.format(frame_id), frame)
+        level = 'extreme'
+
+    print('Danger level for frame {}: {}'.format(frame_id, label))
+    danger_mapping = {
+        'low': (0, 255, 0),
+        'moderate': (0, 255, 255),
+        'high': (0, 165, 255),
+        'extreme': (0, 0, 255)
+    }
+    result = frame.copy()
+    cv2.rectangle(frame, (0, 0), (224, 224), danger_mapping[level], -1)
+    cv2.addWeighted(frame, 0.3, result, 1 - 0.3,0, result)
+    cv2.putText(result,'Danger Level: {}'.format(level),(25,25), cv2.FONT_HERSHEY_SIMPLEX, 0.4,(255,255,255),1,cv2.LINE_AA)
+
+    cv2.imwrite('/home/nvidia/Downloads/output/{}-result.jpg'.format(frame_id), result)
 
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
         packet = json.loads(self.data)
-        
-        frame_id = packet['frame_id']
-        frame = cv2.imread(packet['original_frame'])
-
-        label = randint(0, 3)
-        color = (0, 0, 255)
-        if label == 1:
-            color = (255, 0, 255)
-        if label == 2:
-            color = (0, 255, 0)
-        if label == 3:
-            color = (255, 0, 0)
-        print('Danger level: {}'.format(label))
-        cv2.rectangle(frame, (0, 0), (224, 224), color, -1)
-        cv2.imwrite('/home/nvidia/Downloads/output/{}-result.jpg'.format(frame_id), frame)
+        scoreFrame(packet)
 
     def handleConnected(self):
         print(self.address, 'connected')

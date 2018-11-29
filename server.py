@@ -19,6 +19,7 @@ class SimpleEcho(WebSocket):
 
 def startServer():
     # removed cached files
+    print('Removing cached files')
     folder = '/home/nvidia/Downloads/output/'
     for f in os.listdir(folder):
         file_path = os.path.join(folder, f)

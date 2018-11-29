@@ -1,10 +1,14 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
+import json
+import time
 
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
-        # echo message back to client
-        self.sendMessage(self.data)
+        packet = json.loads(self.data)
+        print(packet)
+        print('\n\n')
+        time.sleep(5)
 
     def handleConnected(self):
         print(self.address, 'connected')

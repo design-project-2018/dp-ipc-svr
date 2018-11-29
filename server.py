@@ -8,7 +8,7 @@ def scoreFrame(packet):
     frame_id = packet['frame_id']
     frame = cv2.imread(packet['original_frame'])
 
-    label = randint(0, 3))
+    label = randint(0, 3)
     color = (0, 0, 255)
     if label == 1:
         color = (255, 0, 255)

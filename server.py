@@ -1,15 +1,30 @@
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 import os, shutil
+from random import randint
 import json
 import time
+
+def scoreFrame(packet):
+    frame_id = packet['frame_id']
+    frame = cv2.imread(packet['original_frame'])
+
+    label = randint(0, 3))
+    color = (0, 0, 255)
+    if label == 1:
+        color = (255, 0, 255)
+    if label == 2:
+        color = (0, 255, 0)
+    if label == 3:
+        color = (255, 0, 0)
+    print('Danger level: {}'.format(label))
+    cv2.rectangle(frame, (0, 0), (224, 224), color, -1)
+    cv2.imwrite('/home/nvidia/Downloads/output/{}-result.jpg'.format(frame_id), frame)
 
 class SimpleEcho(WebSocket):
 
     def handleMessage(self):
         packet = json.loads(self.data)
-        print(packet)
-        print('\n\n')
-        time.sleep(5)
+        scoreFrame(packet)
 
     def handleConnected(self):
         print(self.address, 'connected')
